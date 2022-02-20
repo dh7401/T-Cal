@@ -1,3 +1,5 @@
+import numpy as np
+
 def ece(scores, labels, num_bins, p=2, debias=False):
   '''
   Return lp-ECE_n
@@ -56,4 +58,3 @@ def rejection_sampling(scores, labels):
   idx2 = labels2 == 1
   
   return scores1[idx1], scores2[idx2]
-  
