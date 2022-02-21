@@ -2,61 +2,58 @@ import sys
 sys.path.append('..')
 
 import numpy as np
-import matplotlib
 import matplotlib.pyplot as plt
 
-from utils import ece, perturb_scores
-
-# reproducibility
-np.random.seed(42)
+from utils import *
 
 
-s = .3
-n = 10000
-m = int(n**(2 / (4* s + 1)))
+def simulate_plugin(n, s, rho, debias, num_trials):
+  m_star = int(n**(2 / (4*s + 1)))
 
-ece2b_null = []
-ece2b_alt = []
+  null_stats = []
+  alt_stats = []
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    null_y = np.random.binomial(1, z, n)
+    null_stats.append(plugin_ece(z, null_y, m_star, debias=debias))
 
-ece2d_null = []
-ece2d_alt = []
+    perturbed_z = perturb_scores(z, m_star//2, s, 1 - 2*(z <= 0.5), rho)
+    alt_y = np.random.binomial(1, perturbed_z, n)
+    alt_stats.append(plugin_ece(z, alt_y, m_star, debias=debias))
 
-ece1_null = []
-ece1_alt = []
-
-for _ in range(1000):
-  null_z = np.random.uniform(size=n)
-  null_y = np.random.binomial(1, null_z, n)
-  alt_z = perturb_scores(null_z, m//2, s, 1 - 2*(null_z <= 0.5), 100)
-  alt_y = np.random.binomial(1, alt_z, n)
-
-  ece2b_null.append(ece(null_z, null_y, m))
-  ece2b_alt.append(ece(null_z, alt_y, m))
-
-  ece2d_null.append(ece(null_z, null_y, m, debias=True))
-  ece2d_alt.append(ece(null_z, alt_y, m, debias=True))
-
-  ece1_null.append(ece(null_z, null_y, m, 1))
-  ece1_alt.append(ece(null_z, alt_y, m, 1))
+  return null_stats, alt_stats
 
 
 if __name__ == '__main__':
-    # pyplot setup
-    plt.rcParams['pgf.preamble'] = r'\usepackage{amsfonts}'
-    plt.rcParams['pgf.texsystem'] = 'pdflatex'
-    plt.rcParams['pgf.rcfonts'] = False
-    plt.rcParams['text.latex.preamble'] = r'\usepackage{amsfonts}'
-    plt.rcParams['text.usetex'] = True
-    plt.rcParams['font.size'] = '9'
-    plt.rcParams['font.family'] = 'serif'
+  # reproducibility
+  np.random.seed(42)
 
-    plt.figure(figsize=(1.7, 1.7))
-    plt.hist(ece2b_null, label='$P_0$', alpha=0.5, bins=20, color='b')
-    plt.hist(ece2b_alt, label='$P_1$', alpha=0.5, bins=20, color='r')
-    plt.axvline(np.mean(ece2b_null), color='b', linestyle='dashed')
-    plt.axvline(np.mean(ece2b_alt), color='r', linestyle='dashed')
-    plt.xlabel('$T_{m, n}^{\mathrm{b}}$')
-    plt.ylabel('count')
-    plt.legend(framealpha=0.5)
-    plt.savefig('figures/bias-03.pgf', bbox_inches = "tight")
+  n = 10000
+  s = 0.3
+  rho = 100
+  num_trials = 1000
 
+  null_ece2b, alt_ece2b = simulate_plugin(n, s, rho, False, num_trials)
+  null_ece2d, alt_ece2d = simulate_plugin(n, s, rho, True, num_trials)
+
+  pyplot_setup()
+
+  plt.figure(figsize=(1.7, 1.7))
+  plt.hist(null_ece2b, label='$P_0$', alpha=0.5, bins=20, color='b')
+  plt.hist(alt_ece2b, label='$P_1$', alpha=0.5, bins=20, color='r')
+  plt.axvline(np.mean(null_ece2b), color='b', linestyle='dashed')
+  plt.axvline(np.mean(alt_ece2b), color='r', linestyle='dashed')
+  plt.xlabel('$T_{m, n}^{\mathrm{b}}$')
+  plt.ylabel('count')
+  plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
+  plt.savefig('figures/biased.pgf', bbox_inches = "tight")
+
+  plt.figure(figsize=(1.7, 1.7))
+  plt.hist(null_ece2d, label='$P_0$', alpha=0.5, bins=20, color='b')
+  plt.hist(alt_ece2d, label='$P_1$', alpha=0.5, bins=20, color='r')
+  plt.axvline(np.mean(null_ece2d), color='b', linestyle='dashed')
+  plt.axvline(np.mean(alt_ece2d), color='r', linestyle='dashed')
+  plt.xlabel('$T_{m, n}^{\mathrm{d}}$')
+  plt.ylabel('count')
+  plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
+  plt.savefig('figures/debiased.pgf', bbox_inches = "tight")
