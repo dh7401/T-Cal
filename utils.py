@@ -1,4 +1,20 @@
 import numpy as np
+import matplotlib.pyplot as plt
+
+
+def pyplot_setup():
+  '''
+  Pyplot setup
+  '''
+  plt.rcParams['pgf.preamble'] = r'\usepackage{amsfonts}'
+  plt.rcParams['pgf.texsystem'] = 'pdflatex'
+  plt.rcParams['pgf.rcfonts'] = False
+  plt.rcParams['text.latex.preamble'] = r'\usepackage{amsfonts}'
+  plt.rcParams['text.usetex'] = True
+  plt.rcParams['font.size'] = '9'
+  plt.rcParams['font.family'] = 'serif'
+
+  return
 
 def ece(scores, labels, num_bins, p=2, debias=False):
   '''
