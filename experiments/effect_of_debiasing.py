@@ -7,35 +7,41 @@ import matplotlib.pyplot as plt
 from utils import *
 
 
-def simulate_plugin(n, s, rho, debias, num_trials):
-  m_star = int(n**(2 / (4*s + 1)))
+def simulate_plugin(n, m, s, rho, debias, num_trials, perturb_m=None):
+  plugin_stats = []
 
-  null_stats = []
-  alt_stats = []
-  for _ in range(num_trials):
-    z = np.random.uniform(size=n)
-    null_y = np.random.binomial(1, z, n)
-    null_stats.append(plugin_ece(z, null_y, m_star, debias=debias))
+  if perturb_m is None:
+    for _ in range(num_trials):
+      z = np.random.uniform(size=n)
+      null_y = np.random.binomial(1, z, n)
+      plugin_stats.append(plugin_ece(z, null_y, m, debias=debias))
+  
+  else:
+    for _ in range(num_trials):
+      z = np.random.uniform(size=n)
+      perturbed_z = perturb_scores(z, perturb_m, s, 1 - 2*(z <= 0.5), rho)
+      alt_y = np.random.binomial(1, perturbed_z, n)
+      plugin_stats.append(plugin_ece(z, alt_y, m, debias=debias))
 
-    perturbed_z = perturb_scores(z, m_star//2, s, 1 - 2*(z <= 0.5), rho)
-    alt_y = np.random.binomial(1, perturbed_z, n)
-    alt_stats.append(plugin_ece(z, alt_y, m_star, debias=debias))
-
-  return null_stats, alt_stats
+  return plugin_stats
 
 
 if __name__ == '__main__':
-  # reproducibility
-  np.random.seed(42)
+  np.random.seed(42) # reproducibility
 
   n = 10000
   s = 0.3
+  m_star = int(n**(2 / (4*s + 1)))
   rho = 100
   num_trials = 1000
 
-  null_ece2b, alt_ece2b = simulate_plugin(n, s, rho, False, num_trials)
-  null_ece2d, alt_ece2d = simulate_plugin(n, s, rho, True, num_trials)
+  null_ece2b = simulate_plugin(n, m_star, s, rho, False, num_trials)
+  alt_ece2b = simulate_plugin(n, m_star, s, rho, False, num_trials, m_star//2)
+  null_ece2d = simulate_plugin(n, m_star, s, rho, True, num_trials)
+  alt_ece2d = simulate_plugin(n, m_star, s, rho, True, num_trials, m_star//2)
 
+
+  # create plot
   pyplot_setup()
 
   plt.figure(figsize=(1.7, 1.7))
@@ -46,7 +52,7 @@ if __name__ == '__main__':
   plt.xlabel('$T_{m, n}^{\mathrm{b}}$')
   plt.ylabel('count')
   plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
-  plt.savefig('figures/biased.pgf', bbox_inches = "tight")
+  plt.savefig('figures/biased.pgf', bbox_inches = 'tight')
 
   plt.figure(figsize=(1.7, 1.7))
   plt.hist(null_ece2d, label='$P_0$', alpha=0.5, bins=20, color='b')
@@ -56,4 +62,4 @@ if __name__ == '__main__':
   plt.xlabel('$T_{m, n}^{\mathrm{d}}$')
   plt.ylabel('count')
   plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
-  plt.savefig('figures/debiased.pgf', bbox_inches = "tight")
+  plt.savefig('figures/debiased.pgf', bbox_inches = 'tight')
