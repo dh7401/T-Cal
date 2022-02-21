@@ -16,7 +16,7 @@ def pyplot_setup():
 
   return
 
-def plugin_ece(scores, labels, num_bins, p=2, debias=False):
+def plugin_ece(scores, labels, num_bins, p=2, debias=True):
   '''
   Input:
     scores: (Z_1, ... , Z_n) \in [0, 1]^n
