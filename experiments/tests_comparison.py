@@ -79,65 +79,56 @@ if __name__ == '__main__':
 
 
   # plug-in test with a fixed binning
-  fixed_t2e_means_list = []
-  fixed_t2e_stds_list = []
+  n = 10000
 
-  for n in ns:
-    fixed_null_stats = simulate_null_plugin(n, 15, 1000)
-    fixed_null_stats.sort()
-    critical_val = fixed_null_stats[-50]
+  fixed_null_stats = simulate_null_plugin(n, 15, 1000)
+  fixed_null_stats.sort()
+  critical_val = fixed_null_stats[-50]
 
-    fixed_t2e_means = []
-    fixed_t2e_stds = []
+  fixed_t2e_means = []
+  fixed_t2e_stds = []
 
-    for m in ms:
-      t2e = []
-      for _ in range(10):
-        fixed_alt_stats = simulate_alt_plugin(n, 15, s, rho, m, 1000)
-        fixed_alt_stats.sort()
-        t2e.append(np.searchsorted(fixed_alt_stats, critical_val) / 1000)
+  for m in ms:
+    t2e = []
+    for _ in range(10):
+      fixed_alt_stats = simulate_alt_plugin(n, 15, s, rho, m, 1000)
+      fixed_alt_stats.sort()
+      t2e.append(np.searchsorted(fixed_alt_stats, critical_val) / 1000)
 
-      fixed_t2e_means.append(np.mean(t2e))
-      fixed_t2e_stds.append(np.std(t2e))
-    
-    fixed_t2e_means_list.append(fixed_t2e_means)
-    fixed_t2e_stds_list.append(fixed_t2e_stds)
+    fixed_t2e_means.append(np.mean(t2e))
+    fixed_t2e_stds.append(np.std(t2e))
+  
 
 
   # logistic test
-  logistic_t2e_means_list = []
-  logistic_t2e_stds_list = []
+  n = 10000
 
-  for n in ns:
-    null_slopes, null_intercepts = simulate_null_logistic(n, 1000)
-    null_slopes.sort()
-    null_intercepts.sort()
+  null_slopes, null_intercepts = simulate_null_logistic(n, 1000)
+  null_slopes.sort()
+  null_intercepts.sort()
 
-    slope_l = null_slopes[12]
-    slope_r = null_slopes[-13]
-    intercept_l = null_intercepts[12]
-    intercept_r = null_intercepts[-13]
+  slope_l = null_slopes[12]
+  slope_r = null_slopes[-13]
+  intercept_l = null_intercepts[12]
+  intercept_r = null_intercepts[-13]
 
-    logistic_t2e_means = []
-    logistic_t2e_stds = []
+  logistic_t2e_means = []
+  logistic_t2e_stds = []
 
-    for m in ms:
-      t2e = []
-      for _ in range(10):
-        alt_slopes, alt_intercepts = simulate_alt_logistic(n, s, rho, m, 1000)
+  for m in ms:
+    t2e = []
+    for _ in range(10):
+      alt_slopes, alt_intercepts = simulate_alt_logistic(n, s, rho, m, 1000)
 
-        count = 0
-        for coef, intercept in zip(alt_slopes, alt_intercepts):
-          if slope_l <= coef <= slope_r and intercept_l <= intercept <= intercept_r:
-            count += 1
+      count = 0
+      for coef, intercept in zip(alt_slopes, alt_intercepts):
+        if slope_l <= coef <= slope_r and intercept_l <= intercept <= intercept_r:
+          count += 1
 
-        t2e.append(count / 1000)
-      logistic_t2e_means.append(np.mean(t2e))
-      logistic_t2e_stds.append(np.std(t2e))
+      t2e.append(count / 1000)
+    logistic_t2e_means.append(np.mean(t2e))
+    logistic_t2e_stds.append(np.std(t2e))
     
-    logistic_t2e_means_list.append(logistic_t2e_means)
-    logistic_t2e_stds_list.append(logistic_t2e_stds)
-
 
   # create plot
   pyplot_setup()
@@ -150,15 +141,8 @@ if __name__ == '__main__':
     plugin_t2e_stds = plugin_t2e_stds_list[i]
     plt.errorbar(eces, plugin_t2e_means, yerr=plugin_t2e_stds, label=f'$n = {ns[i]}$', color = f'{colors[i]}', linewidth=0.5)
 
-  for i in range(3):
-    fixed_t2e_means = fixed_t2e_means_list[i]
-    fixed_t2e_stds = fixed_t2e_stds_list[i]
-    plt.errorbar(eces, fixed_t2e_means, yerr=fixed_t2e_stds, color = f'{colors[i]}', linestyle='dotted', linewidth=0.5)
-
-  for i in range(3):
-    logistic_t2e_means = logistic_t2e_means_list[i]
-    logistic_t2e_stds = logistic_t2e_stds_list[i]
-    plt.errorbar(eces, logistic_t2e_means, yerr=logistic_t2e_stds, color = f'{colors[i]}', linestyle='dashdot', linewidth=0.5)
+  plt.errorbar(eces, fixed_t2e_means, yerr=fixed_t2e_stds, color = 'b', linestyle='dotted', linewidth=0.5)
+  plt.errorbar(eces, logistic_t2e_means, yerr=logistic_t2e_stds, color = 'b', linestyle='dashdot', linewidth=0.5)
 
   plt.xlabel('$\ell_2$-ECE')
   plt.ylabel('Type II error')
