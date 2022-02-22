@@ -5,26 +5,52 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 from utils import *
-from effect_of_debiasing import simulate_plugin
 
 
-def simulate_splitting(n, m, s, rho, num_trials, perturb_m=None):
+def simulate_null_plugin(n, m, num_trials):
+  plugin_stats = []
+
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    null_y = np.random.binomial(1, z, n)
+    plugin_stats.append(plugin_ece(z, null_y, m, debias=True))
+
+  return plugin_stats
+
+
+def simulate_alt_plugin(n, m, s, rho, perturb_m, num_trials):
+  plugin_stats = []
+  
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
+    alt_y = np.random.binomial(1, perturbed_z, n)
+    plugin_stats.append(plugin_ece(z, alt_y, m, debias=True))
+
+  return plugin_stats
+
+
+def simulate_null_splitting(n, m, num_trials):
   splitting_stats = []
 
-  if perturb_m is None:
-    for _ in range(num_trials):
-      z = np.random.uniform(size=n)
-      null_y = np.random.binomial(1, z, n)
-      null_v, null_w = rejection_sampling(z, null_y)
-      splitting_stats.append(chi_squared(null_v, null_w, m))
-  
-  else:
-    for _ in range(num_trials):
-      z = np.random.uniform(size=n)
-      perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
-      alt_y = np.random.binomial(1, perturbed_z, n)
-      alt_v, alt_w = rejection_sampling(z, alt_y)
-      splitting_stats.append(chi_squared(alt_v, alt_w, m))
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    null_y = np.random.binomial(1, z, n)
+    null_v, null_w = rejection_sampling(z, null_y)
+    splitting_stats.append(chi_squared(null_v, null_w, m))
+
+  return splitting_stats
+
+
+def simulate_alt_splitting(n, m, s, rho, perturb_m, num_trials):
+  splitting_stats = []
+
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
+    alt_y = np.random.binomial(1, perturbed_z, n)
+    alt_v, alt_w = rejection_sampling(z, alt_y)
+    splitting_stats.append(chi_squared(alt_v, alt_w, m))
 
   return splitting_stats
 
@@ -40,7 +66,7 @@ if __name__ == '__main__':
   eces = [0.0098 * rho * m**(-s) for m in ms] # numerically computed the L2 norm of zeta
 
   # plug-in test
-  plugin_null_stats = simulate_plugin(n, m_star, s, rho, True, 1000)
+  plugin_null_stats = simulate_null_plugin(n, m_star, 1000)
   plugin_null_stats.sort()
   critical_val = plugin_null_stats[-50]
 
@@ -48,8 +74,8 @@ if __name__ == '__main__':
   plugin_t2e_stds = []
   for m in ms:
     t2e = []
-    for _ in range(3):
-      plugin_alt_stats = simulate_plugin(n, m_star, s, rho, True, 1000, m)
+    for _ in range(10):
+      plugin_alt_stats = simulate_alt_plugin(n, m_star, s, rho, m, 1000)
       plugin_alt_stats.sort()
       t2e.append(np.searchsorted(plugin_alt_stats, critical_val) / 1000)
 
@@ -58,7 +84,7 @@ if __name__ == '__main__':
 
 
   # sample splitting test
-  splitting_null_stats = simulate_splitting(n, m_star, s, rho, 1000)
+  splitting_null_stats = simulate_null_splitting(n, m_star, 1000)
   splitting_null_stats.sort()
   critical_val = splitting_null_stats[-50]
 
@@ -68,7 +94,7 @@ if __name__ == '__main__':
   for m in ms:
     t2e = []
     for _ in range(3):
-      splitting_alt_stats = simulate_splitting(n, m_star, s, rho, 1000, m)
+      splitting_alt_stats = simulate_alt_splitting(n, m_star, s, rho, m, 1000)
       splitting_alt_stats.sort()
       t2e.append(np.searchsorted(splitting_alt_stats, critical_val) / 1000)
 
