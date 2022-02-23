@@ -93,7 +93,7 @@ if __name__ == '__main__':
 
   for m in ms:
     t2e = []
-    for _ in range(3):
+    for _ in range(10):
       splitting_alt_stats = simulate_alt_splitting(n, m_star, s, rho, m, 1000)
       splitting_alt_stats.sort()
       t2e.append(np.searchsorted(splitting_alt_stats, critical_val) / 1000)
@@ -108,8 +108,8 @@ if __name__ == '__main__':
   plt.figure(figsize=(1.7, 1.7))
   plt.xlabel('$\ell_2$-ECE')
   plt.ylabel('Type II error')
-  plt.errorbar(eces, plugin_t2e_means, yerr=plugin_t2e_stds, label='debiased plug-in', color='b', linewidth=0.5)
-  plt.errorbar(eces, splitting_t2e_means, yerr=splitting_t2e_stds, label='sample splitting', color='r', linewidth=0.5)
+  plt.errorbar(eces, plugin_t2e_means, yerr=plugin_t2e_stds, label='plug-in', color='b', linewidth=0.5)
+  plt.errorbar(eces, splitting_t2e_means, yerr=splitting_t2e_stds, label='splitting', color='r', linewidth=0.5)
   plt.axhline(y=0.95, color='k', linestyle='--', linewidth=0.5)
-  plt.legend(framealpha=0.5, loc='lower left', prop={'size': 6})
+  plt.legend(framealpha=0.5, loc='lower left')
   plt.savefig('figures/plugin_vs_splitting.pgf', bbox_inches = 'tight')

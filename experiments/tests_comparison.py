@@ -146,11 +146,10 @@ if __name__ == '__main__':
 
   plt.xlabel('$\ell_2$-ECE')
   plt.ylabel('Type II error')
-  plt.axhline(y=0.95, color='k', linestyle='--', linewidth=0.5)
   line1 = Line2D([0], [0], label='optimal bin', color='k', linewidth=0.5)
   line2 = Line2D([0], [0], label='fixed bin', color='k', linestyle='dotted', linewidth=0.5)
   line3 = Line2D([0], [0], label='logistic', color='k', linestyle='dashdot', linewidth=0.5)
   handles, _ = plt.gca().get_legend_handles_labels()
   handles.extend([line1, line2, line3])
-  plt.legend(handles=handles, framealpha=0.5, loc='lower left', prop={'size': 6})
+  plt.legend(handles=handles, framealpha=0.5, loc='center left', bbox_to_anchor=(1, 0.5))
   plt.savefig('figures/compare.pgf', bbox_inches = 'tight')
