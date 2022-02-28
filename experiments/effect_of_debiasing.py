@@ -54,7 +54,7 @@ if __name__ == '__main__':
   plt.axvline(np.mean(null_biased), color='b', linestyle='dashed')
   plt.axvline(np.mean(alt_biased), color='r', linestyle='dashed')
   plt.xlabel('$T_{m^*, n}^{\mathrm{b}}$')
-  plt.ylabel('count')
+  plt.ylabel('Count')
   plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
   plt.savefig('figures/biased.pgf', bbox_inches = 'tight')
 
@@ -64,6 +64,6 @@ if __name__ == '__main__':
   plt.axvline(np.mean(null_debiased), color='b', linestyle='dashed')
   plt.axvline(np.mean(alt_debiased), color='r', linestyle='dashed')
   plt.xlabel('$T_{m^*, n}^{\mathrm{d}}$')
-  plt.ylabel('count')
+  plt.ylabel('Count')
   plt.legend(framealpha=0.5, loc='upper right', prop={'size': 6})
   plt.savefig('figures/debiased.pgf', bbox_inches = 'tight')

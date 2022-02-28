@@ -7,7 +7,29 @@ from matplotlib.lines import Line2D
 import statsmodels.api as sm
 
 from utils import *
-from splitting_vs_plugin import simulate_null_plugin, simulate_alt_plugin
+
+
+def simulate_null_plugin(n, m, p, debias, num_trials):
+  plugin_stats = []
+
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    null_y = np.random.binomial(1, z, n)
+    plugin_stats.append(plugin_ece(z, null_y, m, p, debias))
+
+  return plugin_stats
+
+
+def simulate_alt_plugin(n, m, s, rho, p, debias, perturb_m, num_trials):
+  plugin_stats = []
+  
+  for _ in range(num_trials):
+    z = np.random.uniform(size=n)
+    perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
+    alt_y = np.random.binomial(1, perturbed_z, n)
+    plugin_stats.append(plugin_ece(z, alt_y, m, p, debias))
+
+  return plugin_stats
 
 
 def simulate_null_logistic(n, num_trials):
@@ -55,7 +77,7 @@ if __name__ == '__main__':
 
   for n in ns:
     m_star = int(n**(2 / (4*s + 1)))
-    plugin_null_stats = simulate_null_plugin(n, m_star, 1000)
+    plugin_null_stats = simulate_null_plugin(n, m_star, 2, True, 1000)
     plugin_null_stats.sort()
     critical_val = plugin_null_stats[-50]
 
@@ -65,7 +87,7 @@ if __name__ == '__main__':
     for m in ms:
       t2e = []
       for _ in range(10):
-        plugin_alt_stats = simulate_alt_plugin(n, m_star, s, rho, m, 1000)
+        plugin_alt_stats = simulate_alt_plugin(n, m_star, s, rho, 2, True, m, 1000)
         plugin_alt_stats.sort()
         t2e.append(np.searchsorted(plugin_alt_stats, critical_val) / 1000)
 
@@ -79,7 +101,7 @@ if __name__ == '__main__':
   # plug-in test with a fixed binning
   n = 10000
 
-  fixed_null_stats = simulate_null_plugin(n, 15, 1000)
+  fixed_null_stats = simulate_null_plugin(n, 15, 1, False, 1000)
   fixed_null_stats.sort()
   critical_val = fixed_null_stats[-50]
 
@@ -89,7 +111,7 @@ if __name__ == '__main__':
   for m in ms:
     t2e = []
     for _ in range(10):
-      fixed_alt_stats = simulate_alt_plugin(n, 15, s, rho, m, 1000)
+      fixed_alt_stats = simulate_alt_plugin(n, 15, s, rho, 1, False, m, 1000)
       fixed_alt_stats.sort()
       t2e.append(np.searchsorted(fixed_alt_stats, critical_val) / 1000)
 
@@ -135,9 +157,9 @@ if __name__ == '__main__':
 
   plt.xlabel('$\ell_2$-ECE')
   plt.ylabel('Type II error')
-  line1 = Line2D([0], [0], label='ours', color='k', linewidth=0.5)
-  line2 = Line2D([0], [0], label='fixed bin', color='k', linestyle='dotted', linewidth=0.5)
-  line3 = Line2D([0], [0], label='logistic score', color='k', linestyle='dashdot', linewidth=0.5)
+  line1 = Line2D([0], [0], label='Ours', color='k', linewidth=0.5)
+  line2 = Line2D([0], [0], label='$\widehat{\ell_1\mathrm{-ECE}}$', color='k', linestyle='dotted', linewidth=0.5)
+  line3 = Line2D([0], [0], label='Logistic', color='k', linestyle='dashdot', linewidth=0.5)
   handles, _ = plt.gca().get_legend_handles_labels()
   handles.extend([line1, line2, line3])
   plt.legend(handles=handles, framealpha=0.5, loc='center left', bbox_to_anchor=(1, 0.5))
