@@ -61,7 +61,7 @@ if __name__ == '__main__':
   n = 20000
   ms = range(40, 250, 10)
 
-  for s, rho in [(0.6, 100), (0.8, 200), (1.0, 400)]:
+  for s, rho in [(0.6, 100), (0.8, 200)]:
     m_star = int(n**(2 / (4*s + 1)))
     eces = [0.0098 * rho * m**(-s) for m in ms] # numerically computed the L2 norm of zeta
 
