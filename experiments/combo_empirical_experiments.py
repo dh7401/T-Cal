@@ -33,10 +33,11 @@ dataset, model_name = 'cifar10', 'densenet121'
 calibration_method = 'No Calibration'
 two_sided_for_miller = True
 
-root = dataset+'/'+dataset+'_'+model_name+'.mat'
+
+
+
+root = "empirical prediction output/"+dataset+'/'+dataset+'_'+model_name+'.mat'
 mat_file = sio.loadmat(root)
-
-
 
 def setup_seed(seed):
     torch.manual_seed(seed)
