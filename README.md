@@ -2,10 +2,13 @@
 This repository contains the implementation of the paper: T-Cal: An optimal test for the calibration of predictive models.
 T-Cal is a minimax optimal test for calibration based on a debiased plug-in estimator of the l2-Expected Calibration Error (ECE).
 
+
 ## Motivation
 
 **TLDR:** The currently prevalent metrics, such as the empirical ECE, can be misleading.
 T-Cal is a test for calibration with provable guarantee.
+
+<img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/altdist.png" width = "300"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/biased.png" width = "300"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/debiased.png" width = "300">
 
 **Long:** 
 
