@@ -98,10 +98,10 @@ def rejection_sampling(scores, labels):
   labels1 = labels[:size//2]
   scores2 = scores[size//2:]
   labels2 = np.random.binomial(1, scores2)
-  idx1 = labels1 == 1
-  idx2 = labels2 == 1
+  indexes1 = labels1 == 1
+  indexes2 = labels2 == 1
   
-  return scores1[idx1], scores2[idx2]
+  return scores1[indexes1], scores2[indexes2]
 
 
 def consistency_resampling(scores):
