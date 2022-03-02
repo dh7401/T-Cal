@@ -1,4 +1,5 @@
 import numpy as np
+from scipy.stats import rankdata
 import matplotlib.pyplot as plt
 
 
@@ -16,6 +17,7 @@ def pyplot_setup():
 
   return
 
+
 def plugin_ece(scores, labels, num_bins, p=2, debias=True):
   '''
   Input:
@@ -27,14 +29,16 @@ def plugin_ece(scores, labels, num_bins, p=2, debias=True):
     Plug-in estimator of l_p-ECE(f)^p w.r.t. m equal-width bins
   '''
   indexes = np.floor(num_bins * scores).astype(int)
+  # reindex to [0, min(num_bins, len(scores))]
+  indexes = rankdata(indexes, method='dense') - 1
   counts = np.bincount(indexes)
   counts[counts == 0] += 1
 
   if p == 2 and debias:
-    error = (((np.bincount(indexes, weights=scores) - np.bincount(indexes, weights=labels))**2
+    error = ((np.bincount(indexes, weights=scores - labels)**2
               - np.bincount(indexes, weights=(scores - labels)**2)) / counts).sum()
   else:
-    error = (np.abs(np.bincount(indexes, weights=scores) - np.bincount(indexes, weights=labels))**p / counts).sum()
+    error = (np.abs(np.bincount(indexes, weights=scores - labels))**p / counts**(p - 1)).sum()
 
   return error / len(scores)
 
@@ -85,7 +89,7 @@ def rejection_sampling(scores, labels):
     scores: (Z_1, ... , Z_n) \in [0, 1]^n
     labels: (Y_1, ... , Y_n) \in {0, 1}^n
   Output:
-    Split the scores and perform rejection sampling based on labels/pseudo-labels (see Section 3.3).
+    Split the scores and perform rejection sampling based on labels/pseudo-labels (see Section 6).
     Output (V_1, ... , V_{n_1}), (W_1, ... , W_{n_2})
   '''
   size = len(scores)
@@ -113,3 +117,33 @@ def consistency_resampling(scores):
   sampled_labels = np.random.binomial(1, sampled_scores, n)
 
   return sampled_scores, sampled_labels
+
+
+def adaptive_T_Cal(scores, labels, alpha=0.05, MC_trials=3000):
+  '''
+  Input:
+    scores: (Z_1, ... , Z_n) \in [0, 1]^n
+    labels: (Y_1, ... , Y_n) \in {0, 1}^n
+    alpha: Size of test (type I error, false detection rate)
+  Output:
+    Result of adaptive T-Cal test
+    Return True if the null hypothesis of perfect calibration is rejected
+  '''
+  
+  n = len(labels)
+  B = int(2 * np.log2(n / np.sqrt(np.log(n))))
+
+  for b in range(1, B + 1): 
+    num_bins = 2**b
+    MC_dpe = np.zeros(MC_trials,)
+    for t in range(MC_trials):
+      MC_scores, MC_labels = consistency_resampling(scores)
+      MC_dpe[t] = plugin_ece(MC_scores, MC_labels, num_bins, 2, True)
+
+    test_dpe = plugin_ece(scores, labels, num_bins, 2, True)
+    threshhold = np.quantile(MC_dpe, 1 - alpha/B)
+    
+    if test_dpe > threshhold:
+      return True
+
+  return False
