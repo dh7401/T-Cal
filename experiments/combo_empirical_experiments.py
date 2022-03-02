@@ -7,13 +7,14 @@ import random
 import scipy.io as sio
 from scipy.stats import rankdata
 
-from calibration import PlattCalibrator, PolyCalibrator, HistogramCalibrator, PlattBinnerCalibrator
+from calibration import PlattCalibrator, HistogramCalibrator, PlattBinnerCalibrator, utils
 from sklearn.isotonic import IsotonicRegression
-
+from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
 
 
 # Users are required to change the model_name and dataset by hand.
-# Using a testing loop for all methods can take a long time, we thus suggest users
+# Using a testing loop for all methods can take a long time, we thus recommend users
 # to try each calibration method one by one.
 
 # User Option: 
@@ -33,11 +34,9 @@ dataset, model_name = 'cifar10', 'densenet121'
 calibration_method = 'No Calibration'
 two_sided_for_miller = True
 
-
-
-
-root = "empirical prediction output/"+dataset+'/'+dataset+'_'+model_name+'.mat'
+root = dataset+'/'+dataset+'_'+model_name+'.mat'
 mat_file = sio.loadmat(root)
+
 
 def setup_seed(seed):
     torch.manual_seed(seed)
@@ -46,6 +45,36 @@ def setup_seed(seed):
     random.seed(seed)
     torch.backends.cudnn.deterministic = True
 setup_seed(2022)
+
+
+def get_poly_scaler(model_probs, labels, poly_degree):
+    clf = LinearRegression()
+    model_probs = model_probs.astype(dtype=np.float64)
+
+    poly_reg = PolynomialFeatures(degree = poly_degree)
+    model_probs = poly_reg.fit_transform(model_probs.reshape((-1,1)))
+    clf.fit(model_probs, labels)
+
+    def calibrator(probs):
+        x = np.array(probs, dtype=np.float64)
+        x = poly_reg.fit_transform(x.reshape((-1,1)))
+        output = np.dot(x, clf.coef_.transpose())+clf.intercept_
+        return output
+    return calibrator
+
+
+class PolyCalibrator:
+    def __init__(self, num_calibration, num_bins, poly_degree):
+        self._num_calibration = num_calibration
+        self._num_bins = num_bins
+        self._poly_degree = poly_degree
+
+    def train_calibration(self, zs, ys):
+        self._poly = get_poly_scaler(zs, ys, self._poly_degree)
+
+    def calibrate(self, zs):
+        return self._poly(zs)
+
 
 def ece(scores, labels, num_bins = 15, p = 2, debias = False):
     '''
@@ -83,8 +112,6 @@ def ece_kumar(scores, labels):
     '''
     indexes = rankdata(scores, method='dense')-1
     counts = np.bincount(indexes)
-    # if np.min(counts) <= 1:
-        # print('Every discrete value should have at least 2 datapoints for debiased estimator!')
     acc_per_bin = np.bincount(indexes, weights=labels) / counts
 
     error1 = ((np.bincount(indexes, weights=scores-labels)**2) / counts / scores.shape[0]).sum()
@@ -167,8 +194,6 @@ def miller_chi_squared_test(scores, labels,  discrete_values, two_sided = True, 
 
 
 
-
-
 # processing the data
 # the predictions have been random shuffled before being stored
 # so we do not shuffle again here for reproducibility
@@ -211,7 +236,6 @@ elif dataset == 'imagenet':
     bi_labels = ((top_1_predicts==labels)*1).reshape((-1,))
 else:
     raise ValueError("The dataset must be input correctly!")
-
 
 
 
