@@ -13,7 +13,7 @@ from sklearn.isotonic import IsotonicRegression
 
 
 # Users are required to change the model_name and dataset by hand.
-# Using a testing loop for all methods can take a long time, we thus recommend users
+# Using a testing loop for all methods can take a long time, we thus suggest users
 # to try each calibration method one by one.
 
 # User Option: 
