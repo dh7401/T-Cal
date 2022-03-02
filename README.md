@@ -1,4 +1,5 @@
 # Calibration-Test
+<!-- This repository contains the implementation of the paper: [T-Cal: An optimal test for the calibration of predictive models.](add the link to our paper) -->
 This repository contains the implementation of the paper: T-Cal: An optimal test for the calibration of predictive models.
 T-Cal is a minimax optimal test for calibration based on a debiased plug-in estimator of the l2-Expected Calibration Error (ECE).
 
@@ -45,6 +46,10 @@ First train a DenseNet on CIFAR100, and save the validation indices:
 ```sh
 python empirical_datasets.py --model <model_name> --method <calibration_method>
 ```
+
+<!-- ## Citation
+
+If you use our adaptive T-Cal, please consider citing: -->
 
 ## Contact
 
