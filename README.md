@@ -18,7 +18,7 @@ T-Cal is an optimal test for calibration with provable guarantees.
 
 
 **Left:** A graph of the calibration curve, corresponding to a mis-calibrated
-probability predictor. **Middle: The emprical l2-ECE values of a mis-calibrated predictor (P1) can be smaller than those of a perfectly calirbated predictor (P0).** **Right: This misleading effect is eliminated by the debiasing in T-Cal.**
+probability predictor. **Middle: The emprical l2-ECE values of a mis-calibrated predictor (P1) can be smaller than those of a perfectly calibrated predictor (P0).** **Right: This misleading effect is eliminated by the debiasing in T-Cal.**
 
 <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/altdist.png" width = "250" height = "230"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/biased.png" width = "250" height = "230"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/debiased.png" width = "250" height = "230">
 
