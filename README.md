@@ -14,7 +14,7 @@ estimator (DPE), binned over several scales.
 T-Cal is an optimal test for calibration with provable guarantee.
 
 
-**Left:** A graph of the calibration curve, correspondign to a mis-calibrated
+**Left:** A graph of the calibration curve, corresponding to a mis-calibrated
 probability predictor. **Middle: The emprical l2-ECE values of a mis-calibrated predictor (P1) can be smaller than those of a perfectly calirbated predictor (P0).** **Right: This misleading effect is elimiated by debiasing in T-Cal.**
 
 <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/altdist.png" width = "250" height = "230"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/biased.png" width = "250" height = "230"> <img src="https://github.com/xmhuang18/images/blob/3f3b3dc11036a8a17603c1ada57c1a8c184dc0c4/Calibration-Test/debiased.png" width = "250" height = "230">
@@ -36,7 +36,7 @@ version that is adaptive to unknown smoothness. T-Cal is a **practical general-p
 discrete-valued predictors—**can be used to test the calibration of virtually any probabilistic classification
 method.**
 
-Testing results of neural networks trained on Cifar-100 is as below table.
+The test results of neural networks trained on Cifar-100 are as below table.
 <img src = "https://github.com/xmhuang18/images/blob/063fa6819cdf202c4263011e994df7ea51dc765b/Calibration-Test/cifar100_table.png" width = "900">
 
 
@@ -49,16 +49,16 @@ pip3 install uncertainty-calibration
 ```
 All results in our paper can be reproduced with the codes in `experiment/`.
 
-Confidence scores and prediction results we used in the empirical dataset expiriment (Section 4.2) are stored in `experiment/data/`.
+Confidence scores and prediction results we used in the empirical dataset experiments (Section 4.2) are stored in `experiments/data/`.
 
-Reproducing the our results is as simple as:
+Reproducing our results is as simple as:
 ```sh
 python empirical_datasets.py --model <model_name> --method <calibration_method>
 ```
-We provide 
 
-- **9 Models:** DenseNet 121 (cifar10_densenet121), ResNet 50 (cfiar10_resnet50), VGG-19(cifar10_vgg19_bn), MobileNet-v2 (cifar100_mobilenetv2_x1_4), ResNet 56 (cifar100_resnet56), ShuffleNet-v2 (cifar100_shufflenetv2_x2_0), DenseNet 161 (imagenet_densenet161), ResNet 152 (imagenet_densenet152), Efficientnet_b7 (imagenet_efficientnet_b7)
-- **6 Calibration Types:** No Calibration (none), Platt Scaling (platt), Polynomial Scaling (poly), Istotonic Regression (isotonic), Histogram Binning (histogram), Scaling Binning (scalebin)
+We provide 
+- **9 Models:** DenseNet 121 (cifar10_densenet121), ResNet 50 (cfiar10_resnet50), VGG-19(cifar10_vgg19_bn), MobileNet-v2 (cifar100_mobilenetv2_x1_4), ResNet 56 (cifar100_resnet56), ShuffleNet-v2 (cifar100_shufflenetv2_x2_0), DenseNet 161 (imagenet_densenet161), ResNet 152 (imagenet_resnet152), Efficientnet_b7 (imagenet_efficientnet_b7)
+- **6 Calibration Types:** No Calibration (none), Platt Scaling (platt), Polynomial Scaling (poly), Isotonic Regression (isotonic), Histogram Binning (histogram), Scaling Binning (scalebin)
 
 For a full sweep, run:
 ```sh
