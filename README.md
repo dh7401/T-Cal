@@ -1,7 +1,8 @@
 # Calibration-Test (T-Cal)
 <!-- This repository contains the implementation of the paper: [T-Cal: An optimal test for the calibration of predictive models.](add the link to our paper) -->
 This repository contains the implementation of the paper: **T-Cal: An optimal test for the calibration of predictive models.**
-T-Cal is a **minimax optimal** test for calibration based on a **debiased plug-in estimator** of the l2-Expected Calibration Error (ECE).
+
+T-Cal is an **adaptive** and  **minimax optimal** test for calibration of predictive models (including deep neural nets) based on a **debiased plug-in estimator** of the l2-Expected Calibration Error (ECE).
 
 
 ## Overview of T-Cal
@@ -73,12 +74,11 @@ bash sweep.sh
 
 <!-- ## Citation
 
-If you use our adaptive T-Cal, please consider citing: -->
+If you use T-Cal, please consider citing: -->
 
 ## Contact
 
-Should you have any questions, please feel free to contact the authors.
-Donghwan Lee, dh7401@sas.upenn.edu
-Xinmeng Huang, xinmengh@sas.upenn.edu
-
+Should you have any questions, please feel free to contact the authors:
+Donghwan Lee, dh7401@sas.upenn.edu;
+Xinmeng Huang, xinmengh@sas.upenn.edu;
 
