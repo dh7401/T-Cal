@@ -13,7 +13,7 @@ estimator (DPE)  of the ell-2 Expected Calibration Error (ECE), binned over seve
 
 ## Motivation
 
-**TL;DR:** The currently prevalent metrics to evaluate calibration, including the empirical ECE, can be suboptimal.
+**TL;DR:** The currently prevalent metrics to evaluate calibration, including the empirical ECE, can be suboptimal, because (1) they often use a fixed binning of the probability predictions (e.g., 10 or 15 bins), whereas one should take the smoothness of the data into account and (2) they rely on plug-in estimates of the ECE, which can be biased (i.e., do not accurately reflect the true mis-calibration level).
 T-Cal is an optimal test for calibration with provable guarantees.
 
 
