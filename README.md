@@ -1,4 +1,4 @@
-# Calibration-Test (T-Cal)
+# T-Cal: A Test of Calibration for Predictive Models
 <!-- This repository contains the implementation of the paper: [T-Cal: An optimal test for the calibration of predictive models.](add the link to our paper) -->
 This repository contains the implementation of the paper: **T-Cal: An optimal test for the calibration of predictive models.**
 
