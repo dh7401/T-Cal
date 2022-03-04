@@ -1,13 +1,13 @@
 # T-Cal: A Test of Calibration for Predictive Models
-<!-- This repository contains the implementation of the paper: [T-Cal: An optimal test for the calibration of predictive models.](add the link to our paper) -->
-This repository contains the implementation of the paper: **T-Cal: An optimal test for the calibration of predictive models.**
+This repository contains the implementation of the paper: **[T-Cal: An optimal test for the calibration of predictive models](http://arxiv.org/abs/2203.01850).**
+<!-- This repository contains the implementation of the paper: **T-Cal: An optimal test for the calibration of predictive models.** -->
 
 T-Cal is an **adaptive** and  **minimax optimal** test for calibration of predictive models (including deep neural nets) based on a **debiased plug-in estimator** of the l2-Expected Calibration Error (ECE).
 
 
 ## Overview of T-Cal
 For a given probability predictor, we compute a debiased plug-in
-estimator (DPE)  of the ell-2 Expected Calibration Error (ECE), binned over several scales.
+estimator (DPE)  of the l2-Expected Calibration Error (ECE), binned over several scales.
 
 <img src = "https://github.com/xmhuang18/images/blob/063fa6819cdf202c4263011e994df7ea51dc765b/Calibration-Test/overview.png" width = "800">
 
@@ -72,9 +72,27 @@ bash sweep.sh
 ```
 
 
-<!-- ## Citation
+## Citation
 
-If you use T-Cal, please consider citing: -->
+If you use T-Cal, please consider citing:
+
+> [Donghwan Lee, Xinmeng Huang, Hamed Hassani, Edgar Dobriban<br/>
+> **T-Cal: An optimal test for the calibration of predictive models**<br/>](http://arxiv.org/abs/2203.01850) 
+<!-- > (replace the venue and the link) -->
+
+```bibtex
+@misc{lee2022tcal,
+      title={T-Cal: An optimal test for the calibration of predictive models}, 
+      author={Donghwan Lee and Xinmeng Huang and Hamed Hassani and Edgar Dobriban},
+      year={2022},
+      eprint={2203.01850},
+      archivePrefix={arXiv},
+      primaryClass={stat.ML}
+}
+```
+
+
+
 
 ## Contact
 
