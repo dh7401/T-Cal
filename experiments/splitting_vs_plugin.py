@@ -24,6 +24,7 @@ def simulate_alt_plugin(n, m, s, rho, perturb_m, num_trials):
   for _ in range(num_trials):
     z = np.random.uniform(size=n)
     perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
+    perturbed_z = np.clip(perturbed_z, 0, 1)
     alt_y = np.random.binomial(1, perturbed_z, n)
     plugin_stats.append(plugin_ece(z, alt_y, m, debias=True))
 

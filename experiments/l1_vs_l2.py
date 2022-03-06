@@ -7,29 +7,7 @@ from matplotlib.lines import Line2D
 import statsmodels.api as sm
 
 from utils import *
-
-
-def simulate_null_plugin(n, m, p, debias, num_trials):
-  plugin_stats = []
-
-  for _ in range(num_trials):
-    z = np.random.uniform(size=n)
-    null_y = np.random.binomial(1, z, n)
-    plugin_stats.append(plugin_ece(z, null_y, m, p, debias))
-
-  return plugin_stats
-
-
-def simulate_alt_plugin(n, m, s, rho, p, debias, perturb_m, num_trials):
-  plugin_stats = []
-  
-  for _ in range(num_trials):
-    z = np.random.uniform(size=n)
-    perturbed_z = perturb_scores(z, perturb_m, s, (-1) ** np.floor(2 * perturb_m * (z - 0.25)), rho)
-    alt_y = np.random.binomial(1, perturbed_z, n)
-    plugin_stats.append(plugin_ece(z, alt_y, m, p, debias))
-
-  return plugin_stats
+from tests_comparison import simulate_null_plugin, simulate_alt_plugin
 
 
 if __name__ == '__main__':
